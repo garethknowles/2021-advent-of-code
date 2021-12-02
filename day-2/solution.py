@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import functools
+from functools import reduce
 
 with open((__file__.rstrip("solution.py")+"input.txt"), 'r') as input_file:
     input = input_file.read()
@@ -14,38 +14,34 @@ test_data = [
     "forward 2",
 ]
 
-def transformInput(line):
+def calculate(line):
     [direction, amount] = line.split(' ')
     amountInt = int(amount)
     if direction == 'forward':
-        return [amountInt, 0]
-    
+        return [amountInt, 0]    
     depth = amountInt if direction == 'down' else -amountInt
     return [0, depth]
 
 def part1(input):
-    movements = list(map(transformInput, input))
+    movements = list(map(calculate, input))
     horizontal = sum(j for _, j in movements)
     depth = sum(i for i, _ in movements)
     return horizontal * depth
 
-def calculate(existing, input):
+def reduction(currentValues, input):
+    [horizontal, depth, aim] = currentValues
     [direction, amount] = input.split(' ')
-    amountInt = int(amount)
-    [horizontal, depth, aim] = existing
     if direction == 'up':
-        aim -= amountInt
+        aim -= int(amount)
     if direction == 'down':
-        aim += amountInt
+        aim += int(amount)
     if direction == 'forward':
-        horizontal += amountInt
-        depth += (aim * amountInt)
-    
+        horizontal += int(amount)
+        depth += (aim * int(amount))    
     return [horizontal, depth, aim]
-    
 
 def part2(input):
-    [horizontal, depth, _] = functools.reduce(calculate, input, [0, 0, 0])
+    [horizontal, depth, _] = reduce(reduction, input, [0, 0, 0])
     return horizontal * depth
 
 print("Part 1 Test Output:\n" + str(part1(test_data)))
