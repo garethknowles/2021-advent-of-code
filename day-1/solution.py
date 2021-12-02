@@ -18,44 +18,26 @@ testData = [
     263,
 ]
 
-def getConsecutivePairs(input):
+def getConsecutiveGroups(input, groupSize):
     solution = []
-    for n in range(0, len(input)-1):
-        new_val = [input[n], input[n+1]]
+    for x in range(0, len(input)-(groupSize-1)):
+        new_val = []
+        for y in range(0, groupSize):
+            new_val.append(input[x+y])
         solution.append(new_val)
     return solution
 
-def getConsecutiveTrios(input):
-    solution = []
-    for n in range(0, len(input)-2):
-        new_val = [input[n], input[n+1], input[n+2]]
-        solution.append(new_val)
-    return solution
+def isBigger(a, b):
+    return 1 if b > a else 0
 
 def part1(input):
-    pairs = getConsecutivePairs(input)
-
-    increases = 0
-    for [a, b] in pairs :
-        if b > a:
-            increases +=1
-
-    return increases
+    pairs = getConsecutiveGroups(input, 2)
+    return sum(isBigger(a, b) for [a, b] in pairs)
 
 def part2(input):
-    groups = getConsecutiveTrios(input)
-
-    totals = []
-    for [a, b, c] in groups :
-        totals.append(a+b+c)
-
-    total_pairs = getConsecutivePairs(totals)
-    increases = 0
-    for [a, b] in total_pairs :
-        if b > a:
-            increases +=1
-    
-    return increases
+    totals = list(map(sum, getConsecutiveGroups(input, 3)))
+    total_pairs = getConsecutiveGroups(totals, 2)
+    return sum(isBigger(a, b) for [a, b] in total_pairs)
 
 print("Part 1 Test Output:")
 print(part1(testData))
