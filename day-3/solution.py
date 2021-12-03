@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from functools import reduce
-from math import floor
+from statistics import multimode
 
 with open((__file__.rstrip("solution.py")+"input.txt"), 'r') as input_file:
     input = input_file.read()
@@ -50,48 +50,43 @@ def part1(input):
     epsilon_rate = int(leastCommonBits, 2)
     return gamma_rate * epsilon_rate
 
+def getDigit(position):
+    def digit(input): return input[position]
+    return digit
 
-def matches(i, common):
-    def calc(input):
-        return True if input[i] == common else False
-    return calc
+def filterByDigit(position, expected):
+    def filter(input):
+        return True if input[position] == expected else False
+    return filter
 
+def mostCommonVal(input, digit):
+    most_common_list = multimode(map(getDigit(digit), input))
+    return most_common_list[0] if len(most_common_list) == 1 else '1'
 
-def oxgen_rating(input):
-    remaining = input
-    for i in range(0, len(remaining[0])):
-        count = reduce(reduction(i, 1), input, 0)
-        most_common = '1' if count < len(input)/2 else '0'
-        remaining = list(filter(matches(i, most_common), input))
-        if len(remaining) == 1:
-            return remaining[0]
+def oxyCalc(input, digit):
+    if len(input) == 1: return input[0]    
+    most_common = mostCommonVal(input, digit)
+    new_list = list(filter(filterByDigit(digit, most_common), input))
+    return oxyCalc(new_list, digit+1)
 
-    return remaining[0]
-
-
-def co2_rating(input):
-    remaining = input
-    for i in range(0, len(remaining[0])):
-        count = reduce(reduction(i, 0), input, 0)
-        least_common = '0' if count >= len(input)/2 else '1'
-        remaining = list(filter(matches(i, least_common), input))
-        if len(remaining) == 1:
-            return remaining[0]
-
-    return remaining[0]
-
+def co2Calc(input, digit):
+    if len(input) == 1: return input[0]    
+    least_common = '1' if mostCommonVal(input, digit) == '0' else '0'
+    new_list = list(filter(filterByDigit(digit, least_common), input))
+    return co2Calc(new_list, digit+1)
 
 def part2(input):
-    oxy = oxgen_rating(input)
-    co2 = co2_rating(input)
-    return [oxy, co2]
+    oxy = oxyCalc(input, 0)
+    oxy_int = int(oxy, 2)
+    co2 = co2Calc(input, 0)
+    co2_int = int(co2, 2)
+    return [oxy_int, co2_int, oxy_int*co2_int]
 
 
 print("Part 1 Test Output:")
 print(str(part1(test_data)))
 print("Part 1 Output:")
 print(str(part1(data)))
-
 
 print("Part 2 Test Output:")
 print(str(part2(test_data)))
