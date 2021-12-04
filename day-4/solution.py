@@ -86,7 +86,20 @@ def part1(input):
 
 
 def part2(input):
-    return 0
+    revealedNumbersInput = input[0].split(',')
+    boardInput = input[1:]
+    boards = transformToBingoBoards(boardInput)
+
+    winOrder = []
+    for i in revealedNumbersInput:
+        for board in boards:
+            if board.checkNumber(i):
+                if not board in winOrder:
+                    winOrder.append(board)
+                    if len(winOrder) == len(boards):
+                        return winOrder[-1].calculateScore()
+
+    return 'No-one won'
 
 
 print("Part 1 Test Output:")
@@ -94,7 +107,7 @@ print(str(part1(test_data)))
 print("Part 1 Output:")
 print(str(part1(data)))
 
-# print("Part 2 Test Output:")
-# print(str(part2(test_data)))
-# print("Part 2 Output:")
-# print(str(part2(data)))
+print("Part 2 Test Output:")
+print(str(part2(test_data)))
+print("Part 2 Output:")
+print(str(part2(data)))
